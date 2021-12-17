@@ -71,7 +71,7 @@ Convert a Website to a crossplatform Desktop application
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Setup the plugin for your environment
+Setup the application for your environment
 
 ### Installation / Setup
 
