@@ -152,7 +152,7 @@ electron-builder --linux
 ```js
 'appName': 'desktopSee',
 ```
-<!-- USAGE EXAMPLES -->
+<!-- SHOWCASE -->
 ## Showcase
 
 About Page
