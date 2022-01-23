@@ -1,22 +1,21 @@
 const config = {
-    //Main Application URL
-    'websiteUrl': 'https://i.imgur.com/FXIcTCD.jpeg',
+  //Main Application URL
+  websiteUrl: "https://i.imgur.com/FXIcTCD.jpeg",
 
-    //Application Name
-    'appName': 'desktopSee',
+  //Application Name
+  appName: "desktopSee",
 
-    //Application window width and height
-    'width': 1280,
-    'height': 800,
-    'minWidth': 1280,
-    'minHeight': 800,
+  //Application window width and height
+  width: 1280,
+  height: 800,
+  minWidth: 1280,
+  minHeight: 800,
 
-    //Hide elements by ID
-    'hideElementsId': [],
+  //Hide elements by ID
+  hideElementsId: [],
 
-    //Hide elements by Class
-    'hideElementsClass': [],
+  //Hide elements by Class
+  hideElementsClass: [],
+};
 
-}
-
-module.exports = config
+module.exports = config;
