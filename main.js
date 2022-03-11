@@ -1,74 +1,105 @@
-const { app, BrowserWindow, webContents, ipcMain, Menu } = require("electron");
-const path = require("path");
-const MainMenuapp = require("./menu-config");
-const RightMenuapp = require("./right-menu-config");
-const appConfig = require("./config");
+const {app, BrowserWindow, nativeTheme, ipcMain, Menu, dialog} = require('electron')
+const path = require('path')
+const MainMenuapp = require('./menu-config')
+const RightMenuapp = require('./right-menu-config')
+const PrintOptions = require('./right-menu-config')
+const appConfig = require('./config')
 
-let mainWindow;
+let mainWindow
 
-let mainMenu = Menu.buildFromTemplate(MainMenuapp);
+// Menu
+let mainMenu = Menu.buildFromTemplate(MainMenuapp)
 
-let rightMenu = Menu.buildFromTemplate(RightMenuapp);
+let rightMenu = Menu.buildFromTemplate(RightMenuapp)
 
-function createWindow() {
+function createWindow () {
   mainWindow = new BrowserWindow({
-    width: appConfig["width"],
-    height: appConfig["height"],
-    minWidth: appConfig["minWidth"],
-    minHeight: appConfig["minHeight"],
+    width: appConfig['width'],
+    height: appConfig['height'],
+    minWidth: appConfig['minWidth'],
+    minHeight: appConfig['minHeight'],
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
-    },
-  });
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true,
+      contextIsolation: false
+    }
+  })
 
-  Menu.setApplicationMenu(mainMenu);
+  //Load Appliaction Main Menu
+  Menu.setApplicationMenu(mainMenu)
 
-  mainWindow.webContents.on("context-menu", (e) => {
-    rightMenu.popup(mainWindow);
-  });
+  //Load Right click menu
+  mainWindow.webContents.on('context-menu', e => {
+    rightMenu.popup(mainWindow)
+  })
 
-  loadWebContent();
+  //CreatWindow execute loding remote content
+  loadWebContent()
+
 }
+
 
 function loadWebContent() {
-  mainWindow.loadFile(path.join(__dirname, "public/loading.html"));
+  //Loading spalsh screen
+  mainWindow.loadFile(path.join(__dirname, 'public/loading.html'))
 
-  let wc = mainWindow.webContents;
+  //create webContants
+  let wc = mainWindow.webContents
 
-  wc.once("did-finish-load", () => {
-    mainWindow.loadURL(appConfig["websiteUrl"]);
-  });
+  //suessfull loding page afer dom created
+  wc.once('did-finish-load'  ,  () => {
+    mainWindow.loadURL(appConfig['websiteUrl'])
+  })
 
-  wc.on("did-fail-load", (error, code) => {
-    //console.log(code)
-    mainWindow.loadFile(path.join(__dirname, "public/offline.html"));
-  });
+  // if not loading page redirect error page
+  wc.on('did-fail-provisional-load', (error, code)=> {
+    mainWindow.loadFile(path.join(__dirname, 'public/offline.html'))
+  })
 }
 
-ipcMain.on("online-status-changed", (event, status) => {
-  if (status === true) {
-    loadWebContent();
-  }
-});
+// Check website loading error (offline, page not found or etc.)
+ipcMain.on('online-status-changed', (event, status) => {
+  if(status == true) { loadWebContent() }
+})
 
+// Print page option
+ipcMain.on('printPage', () => {
+
+  var options = PrintOptions;
+
+  let win = BrowserWindow.getFocusedWindow();
+
+  win.webContents.print(options, (success, failureReason) => {
+    if (!success) dialog.showMessageBox(mainWindow, {
+      message: failureReason.charAt(0).toUpperCase() + failureReason.slice(1),
+      type: "error",
+      buttons: ["Cancel"],
+      defaultId: 0,
+      title: "Print Error",
+    });
+  });
+})
+
+//Load menuItem local pages (About, Home page, etc)
 module.exports = (pageId) => {
-  if (pageId === "home") {
-    loadWebContent();
+  if(pageId === 'home') {
+    loadWebContent()
   } else {
-    mainWindow.loadFile(path.join(__dirname, `public/${pageId}.html`));
+    mainWindow.loadFile(path.join(__dirname, `public/${pageId}.html`))
   }
-};
+}
 
-app.whenReady().then(createWindow);
+app.whenReady().then(createWindow)
 
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
+// Quit when all windows are closed.
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit()
   }
-});
+})
 
-app.on("activate", () => {
+app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
+    createWindow()
   }
-});
+})

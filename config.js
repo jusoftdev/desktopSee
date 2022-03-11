@@ -1,6 +1,6 @@
 const config = {
   //Main Application URL
-  websiteUrl: "https://i.imgur.com/FXIcTCD.jpeg",
+  websiteUrl: "https://adssadasd.xd",
 
   //Application Name
   appName: "desktopSee",
